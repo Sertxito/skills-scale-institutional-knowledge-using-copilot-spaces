@@ -67,7 +67,14 @@ jobs:
 
       - name: Disable current workflow and enable next one
         run: |
+          next_workflow_state="$(gh workflow view "2-step.yml" --json state --jq '.state')"
+
+          if [ "$next_workflow_state" != "active" ]; then
+            gh workflow enable "2-step.yml"
+          else
+            echo "Workflow 2-step.yml is already active."
+          fi
+
           gh workflow disable "${{github.workflow}}"
-          gh workflow enable "Step 2"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
